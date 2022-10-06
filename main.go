@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/anyingiit/UnifyAuthCenter/utils"
 	"html/template"
 	"log"
 	"net/http"
@@ -12,21 +14,36 @@ import (
 //	 2. 提供一个用于内部效验的接口, 该接口能够通过Set-Cookie中的SessionID效验用户是否处于有效会话中
 //	 3. 提供一个用于管理员端的界面, 该界面能够列出所有Session信息, 并且能够使某个Session失效
 //	 工具相关:
-//	 1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器
+//	 1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器(注: TOTP的恢复密码不是TOTP中的标准, 是需要用户自行定义恢复规则并生成的	)
 
 func generateTOTPHomePage(w http.ResponseWriter, r *http.Request) {
 	t, err := template.ParseFiles("./template/tool/generation_TOTP/welcome.tmpl")
 	if err != nil {
-		log.Fatalf("parse template failed, err: %s", err.Error())
+		log.Printf("parse template failed, err: %s\n", err.Error())
 		http.Error(w, "parse template failed", http.StatusInternalServerError)
 		return
 	}
 	err = t.Execute(w, nil)
 	if err != nil {
-		log.Fatalf("excute template failed, err: %s", err.Error())
-		http.Error(w, "excute template failed", http.StatusInternalServerError)
+		log.Printf("execute template failed, err: %s\n", err.Error())
+		http.Error(w, "execute template failed", http.StatusInternalServerError)
 		return
 	}
+}
+
+func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/tool/generation_TOTP/generation.tmpl")
+	if err != nil {
+		log.Printf("parse template failed, err: %s\n", err.Error())
+		http.Error(w, "parse template failed", http.StatusInternalServerError)
+		return
+	}
+	fmt.Println(t)
+
+	fmt.Println(utils.GenerationNewTOTP("daliCompany", "DaLiGe", 200, 200))
+
+	return
+	//TODO
 }
 
 func main() {
@@ -41,7 +58,8 @@ func main() {
 
 	// 工具相关
 	// 生成TOTP
-	http.HandleFunc("/tool/totp", generateTOTPHomePage)
+	http.HandleFunc("/tool/totp", generateTOTPHomePage)                  // 欢迎页面
+	http.HandleFunc("/tool/totp/generation", generateTOTPGenerationPage) // 生成TOTP页面
 	serverAddress := "localhost:8066"
 	log.Printf("server starting with address: %s", serverAddress)
 	err := http.ListenAndServe(serverAddress, nil)
