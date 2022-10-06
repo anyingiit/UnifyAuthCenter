@@ -15,7 +15,7 @@ import (
 //	 1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器
 
 func generateTOTPHomePage(w http.ResponseWriter, r *http.Request) {
-	t, err := template.ParseFiles("./tool/generation_TOTP/welcome.tmpl")
+	t, err := template.ParseFiles("./template/tool/generation_TOTP/welcome.tmpl")
 	if err != nil {
 		log.Fatalf("parse template failed, err: %s", err.Error())
 		http.Error(w, "parse template failed", http.StatusInternalServerError)
