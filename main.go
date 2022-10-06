@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 )
@@ -13,9 +14,30 @@ import (
 //	 工具相关:
 //	 1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器
 
+func generateTOTPHomePage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./tool/generation_TOTP/welcome.tmpl")
+	if err != nil {
+		log.Fatalf("parse template failed, err: %s", err.Error())
+		http.Error(w, "parse template failed", http.StatusInternalServerError)
+		return
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Fatalf("excute template failed, err: %s", err.Error())
+		http.Error(w, "excute template failed", http.StatusInternalServerError)
+		return
+	}
+}
+
 func main() {
+	// 静态文件
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
+	// 登录相关
+
+	// 工具相关
+	// 生成TOTP
+	http.HandleFunc("/tool/totp", generateTOTPHomePage)
 	serverAddress := "localhost:8066"
 	log.Printf("server starting with address: %s", serverAddress)
 	err := http.ListenAndServe(serverAddress, nil)
