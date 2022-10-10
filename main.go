@@ -116,6 +116,39 @@ func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func loginPage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Add("Location", "/login/form")
+	w.WriteHeader(http.StatusFound)
+}
+
+func loginFormPage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/login/form.tmpl")
+	if err != nil {
+		log.Printf("parse template failed, err: %s\n", err.Error())
+		http.Error(w, "parse template failed", http.StatusInternalServerError)
+		return
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Printf("execute template failed, err: %s\n", err.Error())
+		http.Error(w, "execute template failed", http.StatusInternalServerError)
+		return
+	}
+}
+func loginVerify(w http.ResponseWriter, r *http.Request) {
+	type Query struct {
+		Code string
+	}
+	query := Query{
+		Code: r.FormValue("code"),
+	}
+	if query.Code == "" {
+		w.Header().Add("Location", "http://www.baidu.com")
+		w.WriteHeader(http.StatusTemporaryRedirect)
+		return
+	}
+}
+
 func main() {
 	// 静态文件
 	// `http.Handle("/static/", http.StripPrefix("/static/"`中的`/static/`必须是`/static/`, 而不能是`/static`
@@ -132,6 +165,11 @@ func main() {
 	http.HandleFunc("/tool/generation_TOTP/welcome", generateTOTPWelcomePage)       // 欢迎页面
 	http.HandleFunc("/tool/generation_TOTP/form", generateTOTPFormPage)             // 表单页面
 	http.HandleFunc("/tool/generation_TOTP/generation", generateTOTPGenerationPage) // 生成TOTP页面
+	http.HandleFunc("/login", loginPage)
+	http.HandleFunc("/login/form", loginFormPage)
+	http.HandleFunc("/login/verify", loginVerify)
+	http.HandleFunc("/login/success", loginPage)
+	http.HandleFunc("/login/failed", loginPage)
 	serverAddress := "localhost:8066"
 	log.Printf("server starting with address: %s", serverAddress)
 	err := http.ListenAndServe(serverAddress, nil)
