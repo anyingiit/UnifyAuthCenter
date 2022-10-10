@@ -5,9 +5,29 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>generation</title>
+  <style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+  </style>
 </head>
 <body>
-  your secret is: {{ .secret }}
-  <img src="{{ .secretPngBase64 }}"></img>
+  <p>Hello</p>
+  <br>
+  <p>use default issure and account name: {{ .UseDefaultIssureAndDefaultAccountName }}</p>
+  <br>
+  <p>issuer: {{ .Issure }}</p>
+  <p>account name: {{ .AccountName }}</p>
+  your secret is: {{ .Secret }}
+  <br>
+  <img src="{{ .SecretPngBase64 }}">
 </body>
 </html>
