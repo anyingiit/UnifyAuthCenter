@@ -12,11 +12,11 @@ import (
 // TODO:
 //
 //	  登录相关:
-//	  1. 能够通过TOTP登录的界面, 该接口能够效验TOTP, 如果效验成功, 将通过Set-Cookie返回一个session
-//		 2. 提供一个用于内部效验的接口, 该接口能够通过Set-Cookie中的SessionID效验用户是否处于有效会话中
-//		 3. 提供一个用于管理员端的界面, 该界面能够列出所有Session信息, 并且能够使某个Session失效
-//		 工具相关:
-//		 1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器(注: TOTP的恢复密码不是TOTP中的标准, 是需要用户自行定义恢复规则并生成的	)
+//	  	1. 能够通过TOTP登录的界面, 该接口能够效验TOTP, 如果效验成功, 将通过Set-Cookie返回一个session
+//	  	2. 提供一个用于内部效验的接口, 该接口能够通过Set-Cookie中的SessionID效验用户是否处于有效会话中
+//	  	3. 提供一个用于管理员端的界面, 该界面能够列出所有Session信息, 并且能够使某个Session失效
+//	  工具相关:
+//		1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器(注: TOTP的恢复密码不是TOTP中的标准, 是需要用户自行定义恢复规则并生成的	)
 func generationTOTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("Location", "/tool/generation_TOTP/welcome")
 	w.WriteHeader(http.StatusFound)
