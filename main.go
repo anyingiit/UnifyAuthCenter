@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"github.com/anyingiit/UnifyAuthCenter/utils"
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/anyingiit/UnifyAuthCenter/utils"
 )
 
 // TODO:
@@ -40,7 +41,15 @@ func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(t)
 
-	fmt.Println(utils.GenerationNewTOTP("daliCompany", "DaLiGe", 200, 200))
+	secret, pngBase64String, err := utils.GenerationNewTOTP("daliCompany", "DaLiGe", 200, 200)
+
+	if err != nil {
+		log.Printf("generation TOTP failed, err: %s\n", err.Error())
+		http.Error(w, "generation TOTP failed", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(secret, pngBase64String)
 
 	return
 	//TODO
