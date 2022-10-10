@@ -88,8 +88,8 @@ func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
 		SecretPngBase64 template.URL
 	}{
 		UseDefaultIssureAndDefaultAccountName: fmt.Sprintf("%t", useDefaultIssureAndDefaultAccountName),
-		Issure:                                query.AccountName,
-		AccountName:                           query.Issure,
+		Issure:                                query.Issure,
+		AccountName:                           query.AccountName,
 		Secret:                                secret,
 		SecretPngBase64:                       template.URL(`data:image/png;base64,` + pngBase64String),
 	})
