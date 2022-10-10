@@ -36,6 +36,21 @@ func generateTOTPWelcomePage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func generateTOTPFormPage(w http.ResponseWriter, r *http.Request) {
+	t, err := template.ParseFiles("./template/tool/generation_TOTP/form.tmpl")
+	if err != nil {
+		log.Printf("parse template failed, err: %s\n", err.Error())
+		http.Error(w, "parse template failed", http.StatusInternalServerError)
+		return
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		log.Printf("execute template failed, err: %s\n", err.Error())
+		http.Error(w, "execute template failed", http.StatusInternalServerError)
+		return
+	}
+}
+
 func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
 	useDefaultIssureAndDefaultAccountName := false
 	type Query struct {
@@ -115,6 +130,7 @@ func main() {
 	// 生成TOTP
 	http.HandleFunc("/tool/generation_TOTP", generationTOTP)                        // 重定向到欢迎页面
 	http.HandleFunc("/tool/generation_TOTP/welcome", generateTOTPWelcomePage)       // 欢迎页面
+	http.HandleFunc("/tool/generation_TOTP/form", generateTOTPFormPage)             // 表单页面
 	http.HandleFunc("/tool/generation_TOTP/generation", generateTOTPGenerationPage) // 生成TOTP页面
 	serverAddress := "localhost:8066"
 	log.Printf("server starting with address: %s", serverAddress)
