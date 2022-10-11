@@ -1,0 +1,17 @@
+{
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "database": "${workspaceFolder:UnifyAuthCenter}/test/test.db",
+      "name": "test.db"
+    },
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "session.db",
+      "database": "${workspaceFolder:UnifyAuthCenter}/database/sessions.db"
+    }
+  ]
+}
