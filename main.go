@@ -10,6 +10,7 @@ import (
 
 	"github.com/anyingiit/UnifyAuthCenter/db"
 	"github.com/anyingiit/UnifyAuthCenter/models"
+	"github.com/anyingiit/UnifyAuthCenter/myErrors"
 	"github.com/anyingiit/UnifyAuthCenter/utils"
 	"github.com/google/uuid"
 	"gorm.io/driver/sqlite"
@@ -24,41 +25,32 @@ import (
 //	  	3. 提供一个用于管理员端的界面, 该界面能够列出所有Session信息, 并且能够使某个Session失效
 //	  工具相关:
 //		1. 提供一个用于生成TOTP的工具, 该工具能够生成一个TOTP, 并将TOTP的二维码和其他相关信息通过HTML的方式展示用户浏览器(注: TOTP的恢复密码不是TOTP中的标准, 是需要用户自行定义恢复规则并生成的	)
-func generationTOTP(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Location", "/tool/generation_TOTP/welcome")
-	w.WriteHeader(http.StatusFound)
-}
-func generateTOTPWelcomePage(w http.ResponseWriter, r *http.Request) {
+
+func generateTOTPWelcomePage(w http.ResponseWriter, r *http.Request) error {
 	t, err := template.ParseFiles("./template/tool/generation_TOTP/welcome.tmpl")
 	if err != nil {
-		log.Printf("parse template failed, err: %s\n", err.Error())
-		http.Error(w, "parse template failed", http.StatusInternalServerError)
-		return
+		return err
 	}
 	err = t.Execute(w, nil)
 	if err != nil {
-		log.Printf("execute template failed, err: %s\n", err.Error())
-		http.Error(w, "execute template failed", http.StatusInternalServerError)
-		return
+		return err
 	}
+	return nil
 }
 
-func generateTOTPFormPage(w http.ResponseWriter, r *http.Request) {
+func generateTOTPFormPage(w http.ResponseWriter, r *http.Request) error {
 	t, err := template.ParseFiles("./template/tool/generation_TOTP/form.tmpl")
 	if err != nil {
-		log.Printf("parse template failed, err: %s\n", err.Error())
-		http.Error(w, "parse template failed", http.StatusInternalServerError)
-		return
+		return err
 	}
 	err = t.Execute(w, nil)
 	if err != nil {
-		log.Printf("execute template failed, err: %s\n", err.Error())
-		http.Error(w, "execute template failed", http.StatusInternalServerError)
-		return
+		return err
 	}
+	return nil
 }
 
-func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
+func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) error {
 	useDefaultIssureAndDefaultAccountName := false
 	type Query struct {
 		Issure      string
@@ -77,18 +69,14 @@ func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
 
 	t, err := template.ParseFiles("./template/tool/generation_TOTP/generation.tmpl")
 	if err != nil {
-		log.Printf("parse template failed, err: %s\n", err.Error())
-		http.Error(w, "parse template failed", http.StatusInternalServerError)
-		return
+		return err
 	}
 	// fmt.Println(t)
 
 	secret, pngBase64String, err := utils.GenerationNewTOTP(query.Issure, query.AccountName, 200, 200)
 
 	if err != nil {
-		log.Printf("generation TOTP failed, err: %s\n", err.Error())
-		http.Error(w, "generation TOTP failed", http.StatusInternalServerError)
-		return
+		return fmt.Errorf("generation TOTP failed, err: %s", err.Error())
 	}
 
 	// fmt.Println(secret, pngBase64String)
@@ -117,64 +105,29 @@ func generateTOTPGenerationPage(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		log.Printf("execute template failed, err: %s\n", err.Error())
-		http.Error(w, "execute template failed", http.StatusInternalServerError)
-		return
+		return err
 	}
+
+	w.WriteHeader(http.StatusOK)
+	return nil
 }
 
-func loginPage(w http.ResponseWriter, r *http.Request) {
-	w.Header().Add("Location", "/login/form")
-	w.WriteHeader(http.StatusFound)
-}
-
-func loginFormPage(w http.ResponseWriter, r *http.Request) {
+func authCenterLogin(w http.ResponseWriter, r *http.Request) error {
 	t, err := template.ParseFiles("./template/login/form.tmpl")
 	if err != nil {
-		log.Printf("parse template failed, err: %s\n", err.Error())
-		http.Error(w, "parse template failed", http.StatusInternalServerError)
-		return
-	}
-	err = t.Execute(w, nil)
-	if err != nil {
-		log.Printf("execute template failed, err: %s\n", err.Error())
-		http.Error(w, "execute template failed", http.StatusInternalServerError)
-		return
-	}
-}
-func loginHandle(w http.ResponseWriter, r *http.Request) {
-	success := func(w http.ResponseWriter, setCookieString string) {
-		t, err := template.ParseFiles("./template/login/success.tmpl")
-		if err != nil {
-			log.Printf("parse template failed, err: %s\n", err.Error())
-			http.Error(w, "parse template failed", http.StatusInternalServerError)
-			return
-		}
-		// 缓存不应存储有关客户端请求或服务器响应的任何内容，即不使用任何缓存。
-		w.Header().Add("Cache-control", "no-store")
-		w.Header().Add("Set-Cookie", setCookieString)
-		err = t.Execute(w, nil)
-		if err != nil {
-			log.Printf("execute template failed, err: %s\n", err.Error())
-			http.Error(w, "execute template failed", http.StatusInternalServerError)
-			return
-		}
-	}
-	failed := func(w http.ResponseWriter, reason string) {
-		t, err := template.ParseFiles("./template/login/failed.tmpl")
-		if err != nil {
-			log.Printf("parse template failed, err: %s\n", err.Error())
-			http.Error(w, "parse template failed", http.StatusInternalServerError)
-			return
-		}
-		err = t.Execute(w, reason)
-		if err != nil {
-			log.Printf("execute template failed, err: %s\n", err.Error())
-			http.Error(w, "execute template failed", http.StatusInternalServerError)
-			return
-		}
+		return err
 	}
 
+	// 如果没有显式调用WriteHeader, 那么在第一次Write的时候, 将自动调用WriteHeader(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
+	err = t.Execute(w, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+func authCenterHandle(w http.ResponseWriter, r *http.Request) error {
 	type Query struct {
 		Code string
 	}
@@ -182,13 +135,11 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 		Code: r.FormValue("code"),
 	}
 	if query.Code == "" {
-		failed(w, "code is empty")
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center login failed", "code is empty")
 	}
 	validated := utils.ValidateTOTP(query.Code, "REMOVED-SEE-README")
 	if !validated {
-		failed(w, "code is invalid")
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center login failed", "code is invalid")
 	}
 
 	nowTime := time.Now()
@@ -200,56 +151,150 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	result := session.Create()
 
 	if result.Error != nil {
-		log.Printf("create session failed, err: %s\n", result.Error.Error())
-		failed(w, "cannot insert session into database")
-		return
+		return fmt.Errorf("create session failed, err: %s", result.Error.Error())
 	}
 
-	success(w, fmt.Sprintf("uuid=%s", session.UUID.String()))
+	t, err := template.ParseFiles("./template/login/success.tmpl")
+	if err != nil {
+		return err
+	}
+	// 缓存不应存储有关客户端请求或服务器响应的任何内容，即不使用任何缓存。
+	w.Header().Add("Cache-control", "no-store")
+	w.Header().Add("Set-Cookie", fmt.Sprintf("uuid=%s", session.UUID.String()))
+	err = t.Execute(w, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func loginStatus(w http.ResponseWriter, r *http.Request) {
+func authCenterStatus(w http.ResponseWriter, r *http.Request) error {
 	type Cookie struct {
 		uuid string
 	}
 	cookieStr := r.Header.Get("Cookie")
 	if cookieStr == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("cookie is empty"))
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "cookie is empty")
 	}
 	cookie := Cookie{
 		uuid: strings.Split(cookieStr, "uuid=")[1],
 	}
 	if cookie.uuid == "" {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("uuid is empty"))
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "uuid is empty")
 	}
 	UUID, err := uuid.Parse(cookie.uuid)
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("uuid type error"))
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "uuid type error")
 	}
 	session := &models.Session{
 		UUID: UUID,
 	}
 	result := session.First()
 	if result.Error != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("uuid invalid or expired"))
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "uuid invalid or expired")
 	}
 
 	if session.ExpiredAt.UnixNano() < time.Now().UnixNano() {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("uuid expired"))
-		return
+		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "uuid expired")
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("uuid valid"))
+	w.Write([]byte("auth center authorized"))
+
+	return nil
+}
+
+func adminLoginPage(w http.ResponseWriter, r *http.Request) error {
+	t, err := template.ParseFiles("./template/admin/form.tmpl")
+	if err != nil {
+		return err
+	}
+	err = t.Execute(w, nil)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func adminLoginHandlePage(w http.ResponseWriter, r *http.Request) error {
+	type Query struct {
+		code string
+	}
+	query := Query{
+		code: r.FormValue("code"),
+	}
+	if query.code == "" {
+		//TODO
+	}
+
+	//TODO
+
+	return nil
+}
+
+type appHandler func(http.ResponseWriter, *http.Request) error
+
+func errWrapper(handle appHandler) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer func() {
+			if r := recover(); r != nil {
+				log.Printf("panic: %v", r)
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			}
+		}()
+
+		err := handle(w, r)
+
+		if err == nil {
+			return
+		}
+
+		responseError := myErrors.NewMyError(err, http.StatusInternalServerError, "internal error", "internal error")
+
+		if userError, ok := err.(myErrors.UserError); ok {
+			responseError.StatusCode = userError.GetStatusCode()
+			responseError.Event = userError.GetEvent()
+			responseError.Reason = userError.GetReason()
+		}
+
+		InternalError := func(w http.ResponseWriter) {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Internal Server Error"))
+		}
+
+		if responseError.StatusCode == http.StatusInternalServerError {
+			log.Printf("internal error: %s", responseError.Err.Error())
+			InternalError(w)
+			return
+		}
+
+		// user error
+		t, err := template.ParseFiles("./template/error/user_error.tmpl")
+		if err != nil {
+			log.Printf("internal error: %s", responseError.Err.Error())
+			InternalError(w)
+			return
+		}
+
+		log.Printf("user error: %s", responseError.Err.Error())
+		w.WriteHeader(responseError.StatusCode)
+		err = t.Execute(w, struct {
+			Message string
+			Event   string
+			Reason  string
+		}{
+			Message: http.StatusText(responseError.StatusCode),
+			Event:   responseError.Event,
+			Reason:  responseError.Reason,
+		})
+		if err != nil {
+			log.Printf("internal error: %s", responseError.Err.Error())
+			InternalError(w)
+			return
+		}
+	}
 }
 
 func main() {
@@ -284,20 +329,31 @@ func main() {
 	//		因为`static`里代表的是`./static`的简写, 而`./static`是相对路径, 代表的是以当前代码文件为中心所指的文件
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	// 登录相关
-
 	// 工具相关
 	// 生成TOTP
-	http.HandleFunc("/tool/generation_TOTP", generationTOTP)                        // 重定向到欢迎页面
-	http.HandleFunc("/tool/generation_TOTP/welcome", generateTOTPWelcomePage)       // 欢迎页面
-	http.HandleFunc("/tool/generation_TOTP/form", generateTOTPFormPage)             // 表单页面
-	http.HandleFunc("/tool/generation_TOTP/generation", generateTOTPGenerationPage) // 生成TOTP页面
-	http.HandleFunc("/login", loginPage)
-	http.HandleFunc("/login/form", loginFormPage)
-	http.HandleFunc("/login/handle", loginHandle)
+	http.HandleFunc("/tool/generation_TOTP", func(w http.ResponseWriter, r *http.Request) { // 重定向到欢迎页面
+		w.Header().Add("Location", "/tool/generation_TOTP/welcome")
+		w.WriteHeader(http.StatusFound)
+	})
+	http.HandleFunc("/tool/generation_TOTP/welcome", errWrapper(generateTOTPWelcomePage))       // 欢迎页面
+	http.HandleFunc("/tool/generation_TOTP/form", errWrapper(generateTOTPFormPage))             // 表单页面
+	http.HandleFunc("/tool/generation_TOTP/generation", errWrapper(generateTOTPGenerationPage)) // 生成TOTP页面
+
+	// 验证中心
+	http.HandleFunc("/auth_center", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Location", "/auth_center/login")
+		w.WriteHeader(http.StatusFound)
+	})
+	http.HandleFunc("/auth_center/login", errWrapper(authCenterLogin))
+	http.HandleFunc("/auth_center/handle", errWrapper(authCenterHandle))
 	// http.HandleFunc("/login/success", loginPage)
 	// http.HandleFunc("/login/failed", loginPage)
-	http.HandleFunc("/login/status", loginStatus)
+	http.HandleFunc("/auth_center/status", errWrapper(authCenterStatus))
+
+	// 管理员
+	http.HandleFunc("/admin/login", errWrapper(adminLoginPage))
+	http.HandleFunc("/admin/login/handle", errWrapper(adminLoginHandlePage))
+	// http.HandleFunc("/admin/session_manage", errWrapper(adminLoginFormPage))
 	serverAddress := "localhost:8066"
 	log.Printf("server starting with address: %s", serverAddress)
 	err = http.ListenAndServe(serverAddress, nil)
