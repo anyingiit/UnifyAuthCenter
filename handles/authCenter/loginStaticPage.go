@@ -6,7 +6,7 @@ import (
 )
 
 func LoginStaticPage(w http.ResponseWriter, r *http.Request) error {
-	t, err := template.ParseFiles("./template/login/form.tmpl")
+	t, err := template.ParseFiles("./template/authCenter/form.tmpl")
 	if err != nil {
 		return err
 	}

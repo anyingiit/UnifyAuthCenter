@@ -2,7 +2,6 @@ package authCenter
 
 import (
 	"fmt"
-	"html/template"
 	"net/http"
 	"time"
 
@@ -39,14 +38,10 @@ func Handle(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("create session failed, err: %s", result.Error.Error())
 	}
 
-	t, err := template.ParseFiles("./template/login/success.tmpl")
-	if err != nil {
-		return err
-	}
 	// 缓存不应存储有关客户端请求或服务器响应的任何内容，即不使用任何缓存。
 	w.Header().Add("Cache-control", "no-store")
-	w.Header().Add("Set-Cookie", fmt.Sprintf("uuid=%s", session.UUID.String()))
-	err = t.Execute(w, nil)
+	w.Header().Add("Set-Cookie", fmt.Sprintf("uuid=%s; Path=/;", session.UUID.String()))
+	_, err := w.Write([]byte("auth success"))
 	if err != nil {
 		return err
 	}
