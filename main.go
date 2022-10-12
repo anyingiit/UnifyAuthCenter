@@ -135,11 +135,11 @@ func authCenterHandle(w http.ResponseWriter, r *http.Request) error {
 		Code: r.FormValue("code"),
 	}
 	if query.Code == "" {
-		return myErrors.NewSimpleAuthorizationError("auth center login failed", "code is empty")
+		return myErrors.NewSimpleBadRequestError("auth center login failed", "code is empty")
 	}
 	validated := utils.ValidateTOTP(query.Code, "REMOVED-SEE-README")
 	if !validated {
-		return myErrors.NewSimpleAuthorizationError("auth center login failed", "code is invalid")
+		return myErrors.NewSimpleBadRequestError("auth center login failed", "code is invalid")
 	}
 
 	nowTime := time.Now()
