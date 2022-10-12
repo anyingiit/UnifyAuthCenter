@@ -39,6 +39,7 @@ func Handle(w http.ResponseWriter, r *http.Request) error {
 
 	// fmt.Println(secret, pngBase64String)
 
+	w.WriteHeader(http.StatusOK)
 	err = t.Execute(w, struct {
 		UseDefaultIssureAndDefaultAccountName string
 		Issure                                string
@@ -66,6 +67,5 @@ func Handle(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	w.WriteHeader(http.StatusOK)
 	return nil
 }
