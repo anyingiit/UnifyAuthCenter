@@ -13,9 +13,9 @@ func registeAuthCenter(serverMux *http.ServeMux) {
 		w.Header().Add("Location", "/auth_center/login")
 		w.WriteHeader(http.StatusFound)
 	})
-	serverMux.HandleFunc("/auth_center/login", middleware.ErrWrapper(authCenter.LoginStaticPage))
-	serverMux.HandleFunc("/auth_center/handle", middleware.ErrWrapper(authCenter.Handle))
+	serverMux.HandleFunc("/auth_center/login", middleware.ErrWrapper(authCenter.LoginStaticPage, nil))
+	serverMux.HandleFunc("/auth_center/handle", middleware.ErrWrapper(authCenter.Handle, nil))
 	// http.HandleFunc("/login/success", loginPage)
 	// http.HandleFunc("/login/failed", loginPage)
-	serverMux.HandleFunc("/auth_center/status", middleware.ErrWrapper(authCenter.Status))
+	serverMux.HandleFunc("/auth_center/status", middleware.ErrWrapper(authCenter.Status, nil))
 }

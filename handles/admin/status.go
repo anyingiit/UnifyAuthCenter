@@ -1,18 +1,14 @@
-package authCenter
+package admin
 
 import (
 	"html/template"
 	"net/http"
-	"time"
 
-	"github.com/anyingiit/UnifyAuthCenter/models"
 	"github.com/anyingiit/UnifyAuthCenter/utils"
-	"github.com/google/uuid"
 )
 
-// 提供给用户的状态检查
 func Status(w http.ResponseWriter, r *http.Request) error {
-	t, err := template.ParseFiles("./template/authCenter/status.tmpl")
+	t, err := template.ParseFiles("./template/admin/login/status.tmpl")
 	if err != nil {
 		return err
 	}
@@ -50,32 +46,21 @@ func Status(w http.ResponseWriter, r *http.Request) error {
 		return nil
 	}
 	type Cookie struct {
-		uuid string
+		admin_password string
 	}
 	cookieStr := r.Header.Get("Cookie")
 	if cookieStr == "" {
 		return isUnLogined(w, "cookie is empty")
 	}
 	cookie := Cookie{
-		uuid: utils.ParseCookieValue(cookieStr, "uuid"),
+		admin_password: utils.ParseCookieValue(cookieStr, "admin_password"),
 	}
-	if cookie.uuid == "" {
-		return isUnLogined(w, "uuid is empty")
-	}
-	UUID, err := uuid.Parse(cookie.uuid)
-	if err != nil {
-		return isUnLogined(w, "uuid type error")
-	}
-	session := &models.Session{
-		UUID: UUID,
-	}
-	result := session.First()
-	if result.Error != nil {
-		return isUnLogined(w, "uuid invalid or expired")
+	if cookie.admin_password == "" {
+		return isUnLogined(w, "admin_password is empty")
 	}
 
-	if session.ExpiredAt.UnixNano() < time.Now().UnixNano() {
-		return isUnLogined(w, "uuid expired")
+	if !utils.IsValidateAdminiPassword(cookie.admin_password) {
+		return isUnLogined(w, "admin_password invalid")
 	}
 
 	return isLogined(w)

@@ -2,11 +2,11 @@ package internalApi
 
 import (
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/anyingiit/UnifyAuthCenter/models"
 	"github.com/anyingiit/UnifyAuthCenter/myErrors"
+	"github.com/anyingiit/UnifyAuthCenter/utils"
 	"github.com/google/uuid"
 )
 
@@ -20,7 +20,7 @@ func AuthorizationUserAuthStatus(w http.ResponseWriter, r *http.Request) error {
 		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "cookie is empty")
 	}
 	cookie := Cookie{
-		uuid: strings.Split(cookieStr, "uuid=")[1],
+		uuid: utils.ParseCookieValue(cookieStr, "uuid"),
 	}
 	if cookie.uuid == "" {
 		return myErrors.NewSimpleAuthorizationError("auth center unauthorized", "uuid is empty")

@@ -10,7 +10,7 @@ import (
 
 type appHandler func(http.ResponseWriter, *http.Request) error
 
-func ErrWrapper(handle appHandler) func(http.ResponseWriter, *http.Request) {
+func ErrWrapper(originHandle appHandler, middleware appHandler) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if r := recover(); r != nil {
@@ -19,7 +19,17 @@ func ErrWrapper(handle appHandler) func(http.ResponseWriter, *http.Request) {
 			}
 		}()
 
-		err := handle(w, r)
+		// 先执行中间件, 如果中间件没有错误， 才会再执行真正的http handle
+
+		var err error
+
+		if middleware != nil {
+			err = middleware(w, r)
+		}
+
+		if err == nil {
+			err = originHandle(w, r)
+		}
 
 		if err == nil {
 			return

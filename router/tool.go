@@ -14,7 +14,7 @@ func registeTool(serverMux *http.ServeMux) {
 		w.Header().Add("Location", "/tool/generation_TOTP/welcome")
 		w.WriteHeader(http.StatusFound)
 	})
-	serverMux.HandleFunc("/tool/generation_TOTP/welcome", middleware.ErrWrapper(generationTOTP.WelcomeStaticPage)) // 欢迎页面
-	serverMux.HandleFunc("/tool/generation_TOTP/form", middleware.ErrWrapper(generationTOTP.FormStaticPage))       // 表单页面
-	serverMux.HandleFunc("/tool/generation_TOTP/generation", middleware.ErrWrapper(generationTOTP.Handle))         // 生成TOTP页面
+	serverMux.HandleFunc("/tool/generation_TOTP/welcome", middleware.ErrWrapper(generationTOTP.WelcomeStaticPage, nil)) // 欢迎页面
+	serverMux.HandleFunc("/tool/generation_TOTP/form", middleware.ErrWrapper(generationTOTP.FormStaticPage, nil))       // 表单页面
+	serverMux.HandleFunc("/tool/generation_TOTP/generation", middleware.ErrWrapper(generationTOTP.Handle, nil))         // 生成TOTP页面
 }

@@ -41,7 +41,8 @@ func Handle(w http.ResponseWriter, r *http.Request) error {
 	// 缓存不应存储有关客户端请求或服务器响应的任何内容，即不使用任何缓存。
 	w.Header().Add("Cache-control", "no-store")
 	w.Header().Add("Set-Cookie", fmt.Sprintf("uuid=%s; Path=/;", session.UUID.String()))
-	_, err := w.Write([]byte("auth success"))
+	w.WriteHeader(http.StatusOK)              // WriterHeader mast be after with w.Header().Xxx
+	_, err := w.Write([]byte("auth success")) // if call the mothod before not call WriterHeader(...), then Status Code will be write 200
 	if err != nil {
 		return err
 	}
