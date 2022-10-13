@@ -21,3 +21,7 @@ func (s *Session) Create() (result *gorm.DB) {
 func (s *Session) First() (result *gorm.DB) {
 	return db.Db.First(s)
 }
+
+func (s *Session) Delete() (result *gorm.DB) {
+	return db.Db.Delete(s)
+}
