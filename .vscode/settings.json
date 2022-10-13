@@ -13,5 +13,6 @@
       "name": "session.db",
       "database": "${workspaceFolder:UnifyAuthCenter}/database/sessions.db"
     }
-  ]
+  ],
+  "editor.tabSize": 2,
 }
