@@ -108,15 +108,14 @@ func AuthorizationAdmin(handle appHandler) MiddlewareFunc {
 	})
 }
 
-// TODO finish AuthorizationSystem
-func AuthorizationSystem(handle appHandler) MiddlewareFunc {
+func AuthorizationInternal(handle appHandler) MiddlewareFunc {
 	type Data struct {
 		AdminPassword string
 	}
 	return Authorization(handle, func(r *http.Request) (interface{}, error) {
-		adminPassword := r.Header.Get("Server-Password")
+		adminPassword := r.Header.Get("Internal-Password")
 		if adminPassword == "" {
-			return nil, myErrors.NewSimpleAuthorizationError("admin unauthorized", "header Server-Password is empty")
+			return nil, myErrors.NewSimpleAuthorizationError("admin unauthorized", "header Internal-Password is empty")
 		}
 		return &Data{AdminPassword: adminPassword}, nil
 	}, func(i interface{}) error {
@@ -125,8 +124,8 @@ func AuthorizationSystem(handle appHandler) MiddlewareFunc {
 			return fmt.Errorf("interface{} failed cover to *Data")
 		}
 
-		if !utils.IsValidateServerPassword(data.AdminPassword) {
-			return myErrors.NewSimpleAuthorizationError("admin unauthorized", "admin password invalid")
+		if !utils.IsValidateInternalPassword(data.AdminPassword) {
+			return myErrors.NewSimpleAuthorizationError("admin unauthorized", "internal password invalid")
 		}
 
 		return nil

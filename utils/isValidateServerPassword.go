@@ -1,5 +1,5 @@
 package utils
 
-func IsValidateServerPassword(validateTarget string) bool {
+func IsValidateInternalPassword(validateTarget string) bool {
 	return validateTarget == "REMOVED-SEE-README"
 }
