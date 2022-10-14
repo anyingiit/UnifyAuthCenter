@@ -1,0 +1,1 @@
+docker build -t unify_auth_center:V0.1 .
