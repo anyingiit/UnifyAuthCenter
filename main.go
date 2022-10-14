@@ -60,7 +60,7 @@ func main() {
 		return
 	}
 
-	serverAddress := "localhost:8066"
+	serverAddress := "0.0.0.0:8066"
 	log.Printf("server starting with address: %s", serverAddress)
 	// 参数2如果为nil, 则使用DefaultServeMux
 	// 我们可以通过http.NewServeMux()新建一个ServeMux, 然后将其作为参数传入
