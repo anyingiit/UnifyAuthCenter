@@ -11,6 +11,7 @@ import (
 
 func registeAdmin(serverMux *http.ServeMux) {
 	// 管理员
+	serverMux.HandleFunc("/admin", middleware.ErrWrapper(admin.Admin, nil))
 	serverMux.HandleFunc("/admin/login", middleware.ErrWrapper(login.LoginStaticPage, nil))
 	serverMux.HandleFunc("/admin/login/handle", middleware.ErrWrapper(login.Handle, nil))
 	serverMux.HandleFunc("/admin/status", middleware.ErrWrapper(admin.Status, nil))

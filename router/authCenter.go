@@ -9,10 +9,7 @@ import (
 
 func registeAuthCenter(serverMux *http.ServeMux) {
 	// 验证中心
-	serverMux.HandleFunc("/auth_center", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Location", "/auth_center/login")
-		w.WriteHeader(http.StatusFound)
-	})
+	serverMux.HandleFunc("/auth_center", middleware.ErrWrapper(authCenter.AuthCenter, nil))
 	serverMux.HandleFunc("/auth_center/login", middleware.ErrWrapper(authCenter.LoginStaticPage, nil))
 	serverMux.HandleFunc("/auth_center/handle", middleware.ErrWrapper(authCenter.Handle, nil))
 	// http.HandleFunc("/login/success", loginPage)
