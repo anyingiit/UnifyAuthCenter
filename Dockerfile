@@ -7,7 +7,6 @@ COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
 COPY . .
-RUN go env -w GOPROXY=https://proxy.golang.com.cn,direct \
-    & go build -v -o /usr/local/bin/app ./main.go
+RUN go build -v -o /usr/local/bin/app ./main.go
 
 CMD ["app"]
