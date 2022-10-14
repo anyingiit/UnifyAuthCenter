@@ -110,9 +110,25 @@ func AuthorizationAdmin(handle appHandler) MiddlewareFunc {
 
 // TODO finish AuthorizationSystem
 func AuthorizationSystem(handle appHandler) MiddlewareFunc {
+	type Data struct {
+		AdminPassword string
+	}
 	return Authorization(handle, func(r *http.Request) (interface{}, error) {
-		return nil, fmt.Errorf("need finish parameteGeter")
+		adminPassword := r.Header.Get("Server-Password")
+		if adminPassword == "" {
+			return nil, myErrors.NewSimpleAuthorizationError("admin unauthorized", "header Server-Password is empty")
+		}
+		return &Data{AdminPassword: adminPassword}, nil
 	}, func(i interface{}) error {
-		return fmt.Errorf("need finish validatar")
+		data, ok := i.(*Data)
+		if !ok {
+			return fmt.Errorf("interface{} failed cover to *Data")
+		}
+
+		if !utils.IsValidateServerPassword(data.AdminPassword) {
+			return myErrors.NewSimpleAuthorizationError("admin unauthorized", "admin password invalid")
+		}
+
+		return nil
 	})
 }

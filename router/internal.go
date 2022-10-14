@@ -9,5 +9,5 @@ import (
 
 func registeInternal(serverMux *http.ServeMux) {
 	// 内部接口
-	serverMux.HandleFunc("/internal/authorization_user_auth_status", middleware.ErrWrapper(middleware.AuthorizationAdmin(internalApi.AuthorizationUserAuthStatus)()))
+	serverMux.HandleFunc("/internal/authorization_user_auth_status", middleware.ErrWrapper(middleware.AuthorizationSystem(internalApi.AuthorizationUserAuthStatus)()))
 }
