@@ -4,5 +4,5 @@ docker run -d \
   -p 8066:8066 \
   --network http-proxy-nginx-bridge \
   -e TZ="Asia/Shanghai" \
-  anyingiit/unify_auth_center:V0.3 \
+  anyingiit/unify_auth_center:V0.4 \
 && docker logs -f unify_auth_center

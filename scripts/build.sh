@@ -1,1 +1,1 @@
-docker build -t anyingiit/unify_auth_center:V0.3 .
+docker build -t anyingiit/unify_auth_center:V0.4 .
