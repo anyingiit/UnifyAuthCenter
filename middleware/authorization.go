@@ -115,7 +115,7 @@ func AuthorizationInternal(handle appHandler) MiddlewareFunc {
 	return Authorization(handle, func(r *http.Request) (interface{}, error) {
 		adminPassword := r.Header.Get("Internal-Password")
 		if adminPassword == "" {
-			return nil, myErrors.NewSimpleAuthorizationError("admin unauthorized", "header Internal-Password is empty")
+			return nil, myErrors.NewSimpleAuthorizationError("internal unauthorized", "header Internal-Password is empty")
 		}
 		return &Data{AdminPassword: adminPassword}, nil
 	}, func(i interface{}) error {
@@ -125,7 +125,7 @@ func AuthorizationInternal(handle appHandler) MiddlewareFunc {
 		}
 
 		if !utils.IsValidateInternalPassword(data.AdminPassword) {
-			return myErrors.NewSimpleAuthorizationError("admin unauthorized", "internal password invalid")
+			return myErrors.NewSimpleAuthorizationError("internal unauthorized", "internal password invalid")
 		}
 
 		return nil
