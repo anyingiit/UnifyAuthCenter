@@ -9,11 +9,11 @@ import (
 )
 
 func Handle(w http.ResponseWriter, r *http.Request) error {
-	type Query struct {
+	type PostForm struct {
 		password string
 	}
-	query := Query{
-		password: r.FormValue("password"),
+	query := PostForm{
+		password: r.PostFormValue("password"),
 	}
 	if query.password == "" {
 		return myErrors.NewSimpleBadRequestError("admin login failed", "password is empty")
