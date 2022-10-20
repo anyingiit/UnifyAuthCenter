@@ -70,6 +70,10 @@ func AuthorizationUser(handle appHandler) MiddlewareFunc {
 		if session.ExpiredAt.UnixNano() < time.Now().UnixNano() {
 			return myErrors.NewSimpleAuthorizationError("user unauthorized", "uuid expired")
 		}
+
+		if session.RoleId != models.RoleUserId {
+			return myErrors.NewSimpleForBiddenErrorError("user unauthorized", "permission denied")
+		}
 		return nil
 	})
 }

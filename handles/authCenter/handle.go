@@ -29,6 +29,7 @@ func Handle(w http.ResponseWriter, r *http.Request) error {
 	nowTime := time.Now()
 	session := &models.Session{
 		UUID:      uuid.New(),
+		RoleId:    models.RoleUserId,
 		CreatedAt: nowTime,                    // if CreatedAt value is empty time.Time obj, gorm will automatically set this to the current time
 		ExpiredAt: nowTime.Add(time.Hour * 8), // Expires in 8 hours
 	}

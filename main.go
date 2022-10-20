@@ -30,8 +30,15 @@ func main() {
 			return err
 		}
 
+		// sqllite默认忽略外键约束, 需要手动开启
+		// 启用外键支持
+		result := dbObj.Exec("PRAGMA foreign_keys = ON")
+		if result.Error != nil {
+			return result.Error
+		}
+
 		// 创建表
-		err = dbObj.AutoMigrate(&models.Session{})
+		err = dbObj.AutoMigrate(&models.Session{}, &models.Role{})
 		if err != nil {
 			return err
 		}

@@ -10,6 +10,8 @@ import (
 
 type Session struct {
 	UUID      uuid.UUID `gorm:"primarykey;unique;not null;type:string"`
+	RoleId    int       `gorm:"not null;type:int"`
+	Role      Role      `gorm:"foreignKey:RoleId"`
 	CreatedAt time.Time
 	ExpiredAt time.Time
 }
