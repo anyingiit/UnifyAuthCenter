@@ -7,7 +7,7 @@ import (
 	"github.com/anyingiit/UnifyAuthCenter/middleware"
 )
 
-func registeAuthCenter(serverMux *http.ServeMux) {
+func regisAuthCenter(serverMux *http.ServeMux) {
 	// 验证中心
 	serverMux.HandleFunc("/auth_center", middleware.ErrWrapper(authCenter.AuthCenter, nil))
 	serverMux.HandleFunc("/auth_center/login", middleware.ErrWrapper(authCenter.LoginStaticPage, nil))

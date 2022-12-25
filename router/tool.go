@@ -7,7 +7,7 @@ import (
 	"github.com/anyingiit/UnifyAuthCenter/middleware"
 )
 
-func registeTool(serverMux *http.ServeMux) {
+func regisTool(serverMux *http.ServeMux) {
 	// 工具相关
 	// 生成TOTP
 	serverMux.HandleFunc("/tool/generation_TOTP", func(w http.ResponseWriter, r *http.Request) { // 重定向到欢迎页面

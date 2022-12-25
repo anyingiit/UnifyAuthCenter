@@ -7,7 +7,7 @@ import (
 	"github.com/anyingiit/UnifyAuthCenter/middleware"
 )
 
-func registeInternal(serverMux *http.ServeMux) {
+func regisInternal(serverMux *http.ServeMux) {
 	// 内部接口
 	serverMux.HandleFunc("/internal/authorization_user_auth_status", middleware.ErrWrapper(middleware.AuthorizationInternal(internalApi.AuthorizationUserAuthStatus)()))
 }

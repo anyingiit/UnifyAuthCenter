@@ -10,6 +10,6 @@ import "net/http"
 // 而`http.FileServer(http.Dir("./static")`中的`./static`必须是`./static`或者`static`
 //
 //	因为`static`里代表的是`./static`的简写, 而`./static`是相对路径, 代表的是以当前代码文件为中心所指的文件
-func registeStatic(serverMux *http.ServeMux) {
+func regisStatic(serverMux *http.ServeMux) {
 	serverMux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 }

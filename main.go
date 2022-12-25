@@ -49,7 +49,7 @@ func main() {
 
 	// 初始化路由, 将所有路由注册到给定的serverMux中
 	initRouter := func(serverMux *http.ServeMux) error {
-		router.RegisteRouters(serverMux)
+		router.RegisRouters(serverMux)
 		return nil
 	}
 

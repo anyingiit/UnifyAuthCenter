@@ -9,7 +9,7 @@ import (
 	"github.com/anyingiit/UnifyAuthCenter/middleware"
 )
 
-func registeAdmin(serverMux *http.ServeMux) {
+func regisAdmin(serverMux *http.ServeMux) {
 	// 管理员
 	serverMux.HandleFunc("/admin", middleware.ErrWrapper(admin.Admin, nil))
 	serverMux.HandleFunc("/admin/login", middleware.ErrWrapper(login.LoginStaticPage, nil))
