@@ -1,11 +1,27 @@
 # Source: GitHub starter workflow "Simple workflow" (MIT) — https://github.com/actions/starter-workflows/blob/main/ci/blank.yml
+#
+# Repaired by repocurator (feature 002):
+#   - `push` and `pull_request` triggered on `main`; this repository's default
+#     branch is `master`, so the workflow had never run on a push to it.
+#   - the test job ran the starter's placeholder echo, so a green check
+#     proved only that the runner could print a sentence; it now runs
+#     `go test ./...`, which exercises `utils/cookie_test.go` (added here,
+#     since the repository shipped no test at all).
+#   - the test job now also builds the same binary the Dockerfile produces,
+#     with `go build -v -o app ./main.go`, before running the tests.
+#
+# What this does not exercise: main.go opens database/sessions.db and starts
+# an HTTP listener on 0.0.0.0:8066, and neither the build nor the added test
+# starts the server itself, so a green check here does not prove the service
+# boots -- only that it compiles and that its one pure helper function still
+# behaves as expected.
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 # The workflow token is read-only by default.
@@ -41,7 +57,12 @@ jobs:
           fi
           echo "All actions are pinned to full-length commit SHAs."
 
-      # Add your project's linters below this line.
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.19'
+
+      - name: Vet
+        run: go vet ./...
 
   test:
     name: Test
@@ -52,7 +73,12 @@ jobs:
         with:
           persist-credentials: false
 
-      # Replace the step below with your project's test command. Pin any setup
-      # action you add to a full commit SHA, like the checkout step above.
-      - name: Run tests
-        run: echo "No tests yet. Replace this step with your project's test command."
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: '1.19'
+
+      - name: Build
+        run: go build -v -o app ./main.go
+
+      - name: Test
+        run: go test ./...
