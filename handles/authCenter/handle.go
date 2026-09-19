@@ -11,6 +11,10 @@ import (
 	"github.com/google/uuid"
 )
 
+// The TOTP secret this handler validated against used to be a string
+// literal on the line below, in a public repository. It now comes from
+// utils.TOTPSecret(), which reads UNIFYAUTH_TOTP_SECRET -- see that
+// function for why moving it out of the source is only half the problem.
 func Handle(w http.ResponseWriter, r *http.Request) error {
 	type Query struct {
 		Code string
@@ -21,7 +25,7 @@ func Handle(w http.ResponseWriter, r *http.Request) error {
 	if query.Code == "" {
 		return myErrors.NewSimpleBadRequestError("auth center login failed", "code is empty")
 	}
-	validated := utils.ValidateTOTP(query.Code, "REMOVED-SEE-README")
+	validated := utils.ValidateTOTP(query.Code, utils.TOTPSecret())
 	if !validated {
 		return myErrors.NewSimpleBadRequestError("auth center login failed", "code is invalid")
 	}
